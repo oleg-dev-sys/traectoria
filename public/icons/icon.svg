@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#007AFF"/>
+      <stop offset="100%" style="stop-color:#00C853"/>
+    </linearGradient>
+    <linearGradient id="plane" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF"/>
+      <stop offset="100%" style="stop-color:#E0E0E0"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#bg)"/>
+  
+  <!-- Trajectory path -->
+  <path d="M 120 380 Q 180 280, 256 256 Q 340 230, 400 130" 
+        stroke="rgba(255,255,255,0.3)" 
+        stroke-width="12" 
+        stroke-linecap="round"
+        fill="none"/>
+  
+  <!-- Plane icon -->
+  <g transform="translate(370, 100) rotate(45)">
+    <path d="M0 40 L15 0 L30 40 L15 30 L0 40 M15 30 L15 55" 
+          fill="url(#plane)"
+          stroke="rgba(0,0,0,0.1)"
+          stroke-width="2"/>
+  </g>
+  
+  <!-- Start point -->
+  <circle cx="120" cy="380" r="16" fill="white" opacity="0.9"/>
+  <circle cx="120" cy="380" r="8" fill="url(#bg)"/>
+  
+  <!-- Checkpoint -->
+  <circle cx="256" cy="256" r="12" fill="white" opacity="0.7"/>
+</svg>
