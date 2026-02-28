@@ -39,11 +39,27 @@ async function request<T>(path: string, method: HttpMethod, body?: unknown, toke
   };
 
   const base = resolveBase().replace(/\/+$/, "");
-  const normalizedPath =
-    base.endsWith("/api") && path.startsWith("/api/")
-      ? path.slice(4)
-      : path;
-  const url = base ? `${base}${normalizedPath}` : normalizedPath;
+  // const normalizedPath =
+  //   base.endsWith("/api") && path.startsWith("/api/")
+  //     ? path.slice(4)
+  //     : path;
+  // const url = base ? `${base}${normalizedPath}` : normalizedPath;
+  const isAbsoluteUrl = base.startsWith("http://") || base.startsWith("https://");
+  
+  let url: string;
+  if (isAbsoluteUrl) {
+    // ✅ Используем URL конструктор для правильного соединения
+    const baseUrl = base.endsWith("/api") ? base : `${base}/api`;
+    const cleanPath = path.startsWith("/api/") ? path.slice(4) : path;
+    url = `${baseUrl}${cleanPath}`;
+  } else {
+    // Относительный путь (для SSR / same-origin)
+    const normalizedPath =
+      base.endsWith("/api") && path.startsWith("/api/")
+        ? path.slice(4)
+        : path;
+    url = base ? `${base}${normalizedPath}` : normalizedPath;
+  }
 
   const res = await fetch(url, {
     method,
