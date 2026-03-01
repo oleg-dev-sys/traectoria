@@ -283,10 +283,14 @@ export const TrajectoryApp = () => {
       const needsAvatarSync = isNativeMiniApp && !user?.avatar;
       console.log("token:", token);
       console.log("isOnboarded:", isOnboarded);
-      if (authAttemptedRef.current || ((isOnboarded || token) && !needsAvatarSync)) {
+      if (authAttemptedRef.current && resolvedPlatform !== 'telegram') {
         setIsAuthBootstrapping(false);
         return;
       }
+      // if (authAttemptedRef.current || ((isOnboarded || token) && !needsAvatarSync)) {
+      //   setIsAuthBootstrapping(false);
+      //   return;
+      // }
 
       if (resolvedPlatform === 'vk' && vkPayload) {
         setIsAuthBootstrapping(true);
