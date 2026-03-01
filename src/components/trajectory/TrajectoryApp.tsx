@@ -250,6 +250,14 @@ export const TrajectoryApp = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
+    console.log('CHECK BEFORE EARLY RETURN:', {
+        authAttemptedRef: authAttemptedRef.current,
+        isOnboarded,
+        token,
+        userAvatar: user?.avatar,
+        needsAvatarSync
+    });
+
     console.log("TG HOOK STATE:", telegram.isTelegram, telegram.isReady);
 
     if (telegram.isTelegram && !telegram.isReady) {
