@@ -250,6 +250,8 @@ export const TrajectoryApp = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
+    console.log("TG HOOK STATE:", telegram.isTelegram, telegram.isReady);
+
     if (telegram.isTelegram && !telegram.isReady) {
       console.log("Waiting for Telegram SDK...");
       return;
@@ -349,7 +351,7 @@ export const TrajectoryApp = () => {
       setIsAuthBootstrapping(false);
     });
 
-  }, [isOnboarded, token, user?.avatar, telegram.initData, telegram.user, bootstrapAuth, setPlatform]);
+  }, [isOnboarded, token, user?.avatar, telegram.initData, telegram.isReady, telegram.user, bootstrapAuth, setPlatform]);
 
 
   useEffect(() => {
