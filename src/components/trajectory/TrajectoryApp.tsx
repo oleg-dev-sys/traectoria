@@ -464,6 +464,12 @@ export const TrajectoryApp = () => {
       return;
     }
 
+    const initData = window.Telegram?.WebApp?.initData;
+    if (!initData) {
+      console.log('[tg] no initData — skip bootstrap');
+      return;
+    }
+
     if (authAttemptedRef.current) return;
 
     console.log('[tg] bootstrap start');
@@ -472,22 +478,28 @@ export const TrajectoryApp = () => {
       setIsAuthBootstrapping(true);
       authAttemptedRef.current = true;
 
-      const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+      try {
+        const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
 
-      const displayName =
-        [tgUser?.first_name, tgUser?.last_name].filter(Boolean).join(' ')
-        || tgUser?.username
-        || 'Telegram User';
+        const displayName =
+          [tgUser?.first_name, tgUser?.last_name].filter(Boolean).join(' ')
+          || tgUser?.username
+          || 'Telegram User';
 
-      await bootstrapAuth({
-        platform: 'telegram',
-        telegramInitData: window.Telegram.WebApp.initData,
-        displayName,
-        avatarUrl: tgUser?.photo_url,
-      });
+        await bootstrapAuth({
+          platform: 'telegram',
+          telegramInitData: initData,
+          displayName,
+          avatarUrl: tgUser?.photo_url,
+        });
 
-      setIsAuthBootstrapping(false);
-      console.log('[tg] bootstrap done');
+        console.log('[tg] bootstrap done');
+      } catch (e) {
+        console.error('[tg] bootstrap failed', e);
+        authAttemptedRef.current = false;
+      } finally {
+        setIsAuthBootstrapping(false);
+      }
     })();
   }, [platform, telegram.isReady, bootstrapAuth]);
 
