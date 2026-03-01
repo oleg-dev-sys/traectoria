@@ -166,6 +166,10 @@ export const useAppStore = create<StoreState>()(
       },
 
       bootstrapAuth: async (opts) => {
+        if (opts.platform === "web") {
+          console.warn("[auth] bootstrapAuth called with web — skipped");
+          return;
+        }
         let auth;
         if (opts.platform === "telegram" && opts.telegramInitData) {
           auth = await apiClient.authTelegram(
@@ -181,10 +185,13 @@ export const useAppStore = create<StoreState>()(
           );
         } else if (opts.platform === "vk" && opts.vkPayload) {
           auth = await apiClient.authVK(opts.vkPayload, opts.displayName, opts.avatarUrl);
-        } 
-        // else {
-        //   auth = await apiClient.authWeb(opts.displayName || "Web User", opts.avatarUrl);
-        // }
+        } else {
+          throw new Error("INVALID_AUTH_PAYLOAD");
+        }
+
+        if (!auth?.access_token) {
+          throw new Error("NO_ACCESS_TOKEN");
+        }
 
         // ИСПРАВЛЕНИЕ: Сохраняем платформу в store
         set({ token: auth.access_token, platform: opts.platform });
