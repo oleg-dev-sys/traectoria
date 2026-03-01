@@ -349,7 +349,7 @@ export const TicketSlider = ({
           </TrajectoryButton>
         )}
 
-        <div className="flex gap-3 mb-6">
+        <div className="flex gap-3 mb-8">
           <TrajectoryButton
             variant="secondary"
             size="md"
