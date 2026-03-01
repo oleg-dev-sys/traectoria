@@ -247,123 +247,151 @@ export const TrajectoryApp = () => {
     })();
   }, [hydrateSession]);
 
+  // useEffect(() => {
+  //   if (typeof window === 'undefined') return;
+
+  //   console.log('CHECK BEFORE EARLY RETURN:', {
+  //       authAttemptedRef: authAttemptedRef.current,
+  //       isOnboarded,
+  //       token,
+  //       userAvatar: user?.avatar,
+  //   });
+
+  //   console.log("TG HOOK STATE:", telegram.isTelegram, telegram.isReady);
+
+  //   if (telegram.isTelegram && !telegram.isReady) {
+  //     console.log("Waiting for Telegram SDK...");
+  //     return;
+  //   }
+
+  //   console.log("После if (telegram.isTelegram && !telegram.isReady)")
+
+  //   void (async () => {
+  //     const isVKEnv =
+  //       typeof window !== 'undefined' &&
+  //       !!window.location.search.includes('vk_');
+
+  //     let vkPayload: Record<string, string> | null = null;
+
+  //     if (isVKEnv) {
+  //       vkPayload = await getVKLaunchPayload();
+  //     }
+      
+  //     if (!vkPayload) {
+  //       // Fallback path for environments that still pass params via URL.
+  //       const params = new URLSearchParams(window.location.search);
+  //       const fromQuery: Record<string, string> = {};
+  //       for (const [key, value] of params.entries()) {
+  //         if (key === 'sign' || key.startsWith('vk_')) {
+  //           fromQuery[key] = value;
+  //         }
+  //       }
+  //       vkPayload = Object.keys(fromQuery).length > 0 ? fromQuery : null;
+  //     }
+
+  //     console.log("Attempting auth for platform:", platform);
+
+  //     const hasVKAuthParams = !!vkPayload?.vk_user_id && !!vkPayload?.sign;
+  //     const isTelegramEnv = telegram.isTelegram || !!telegram.initData;
+  //     const resolvedPlatform = hasVKAuthParams ? 'vk' : isTelegramEnv ? 'telegram' : 'web';
+  //     setPlatform(resolvedPlatform);
+
+  //     const isNativeMiniApp = resolvedPlatform === 'vk' || resolvedPlatform === 'telegram';
+  //     const needsAvatarSync = isNativeMiniApp && !user?.avatar;
+  //     console.log("token:", token);
+  //     console.log("isOnboarded:", isOnboarded);
+  //     if (authAttemptedRef.current || ((isOnboarded || token) && !needsAvatarSync)) {
+  //       setIsAuthBootstrapping(false);
+  //       return;
+  //     }
+
+  //     if (resolvedPlatform === 'vk' && vkPayload) {
+  //       setIsAuthBootstrapping(true);
+  //       authAttemptedRef.current = true;
+  //       let displayName = `VK ${vkPayload.vk_user_id}`;
+  //       let avatarUrl: string | undefined;
+  //       try {
+  //         await vkBridge.send('VKWebAppInit');
+  //         const userInfo = (await vkBridge.send('VKWebAppGetUserInfo')) as {
+  //           first_name?: string;
+  //           last_name?: string;
+  //           screen_name?: string;
+  //           photo_200?: string;
+  //         };
+  //         avatarUrl = userInfo.photo_200;
+
+  //         displayName =
+  //           [userInfo.first_name, userInfo.last_name].filter(Boolean).join(' ').trim() ||
+  //           userInfo.screen_name ||
+  //           displayName;
+  //       } catch {
+  //         // fallback to id-based label
+  //       }
+        
+  //       await bootstrapAuth({
+  //         platform: 'vk',
+  //         vkPayload,
+  //         displayName,
+  //         avatarUrl,
+  //       });
+  //       return;
+  //     }
+
+  //     console.log('=== AUTH DEBUG ===');
+  //     console.log('resolvedPlatform:', resolvedPlatform);
+  //     console.log('window.Telegram?.WebApp?.initData:', !!window.Telegram?.WebApp?.initData);
+  //     console.log('authAttemptedRef.current:', authAttemptedRef.current);
+  //     console.log('token:', !!token);
+  //     console.log('isOnboarded:', isOnboarded);
+  //     console.log('=================');
+
+  //     if (resolvedPlatform === 'telegram' && window.Telegram?.WebApp?.initData) {
+  //         setIsAuthBootstrapping(true);
+  //         authAttemptedRef.current = true;
+  //         const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
+  //         const displayName =
+  //             [tgUser?.first_name, tgUser?.last_name].filter(Boolean).join(' ').trim() ||
+  //             tgUser?.username ||
+  //             'Telegram User';
+  //         await bootstrapAuth({
+  //             platform: 'telegram',
+  //             telegramInitData: window.Telegram.WebApp.initData,
+  //             displayName,
+  //             avatarUrl: tgUser?.photo_url,
+  //         });
+  //         return;
+  //     }
+
+  //     setIsAuthBootstrapping(false);
+  //   })().catch((err) => {
+  //     console.error('Platform bootstrap auth failed', err);
+  //     authAttemptedRef.current = false;
+  //   }).finally(() => {
+  //     setIsAuthBootstrapping(false);
+  //   });
+
+  // }, [isOnboarded, token, user?.avatar, telegram.initData, telegram.isReady, telegram.user, bootstrapAuth, setPlatform]);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    console.log('CHECK BEFORE EARLY RETURN:', {
-        authAttemptedRef: authAttemptedRef.current,
-        isOnboarded,
-        token,
-        userAvatar: user?.avatar,
-    });
+    const params = new URLSearchParams(window.location.search);
+    const hasVKParams =
+      params.has('vk_user_id') && params.has('sign');
 
-    console.log("TG HOOK STATE:", telegram.isTelegram, telegram.isReady);
+    const isTelegramEnv =
+      telegram.isTelegram || !!window.Telegram?.WebApp?.initData;
 
-    if (telegram.isTelegram && !telegram.isReady) {
-      console.log("Waiting for Telegram SDK...");
-      return;
-    }
+    const resolvedPlatform = hasVKParams
+      ? 'vk'
+      : isTelegramEnv
+        ? 'telegram'
+        : 'web';
 
-    console.log("После if (telegram.isTelegram && !telegram.isReady)")
+    setPlatform(resolvedPlatform);
 
-    void (async () => {
-      let vkPayload = await getVKLaunchPayload();
-      
-      if (!vkPayload) {
-        // Fallback path for environments that still pass params via URL.
-        const params = new URLSearchParams(window.location.search);
-        const fromQuery: Record<string, string> = {};
-        for (const [key, value] of params.entries()) {
-          if (key === 'sign' || key.startsWith('vk_')) {
-            fromQuery[key] = value;
-          }
-        }
-        vkPayload = Object.keys(fromQuery).length > 0 ? fromQuery : null;
-      }
-
-      console.log("Attempting auth for platform:", platform);
-
-      const hasVKAuthParams = !!vkPayload?.vk_user_id && !!vkPayload?.sign;
-      const isTelegramEnv = telegram.isTelegram || !!telegram.initData;
-      const resolvedPlatform = hasVKAuthParams ? 'vk' : isTelegramEnv ? 'telegram' : 'web';
-      setPlatform(resolvedPlatform);
-
-      const isNativeMiniApp = resolvedPlatform === 'vk' || resolvedPlatform === 'telegram';
-      const needsAvatarSync = isNativeMiniApp && !user?.avatar;
-      console.log("token:", token);
-      console.log("isOnboarded:", isOnboarded);
-      if (authAttemptedRef.current || ((isOnboarded || token) && !needsAvatarSync)) {
-        setIsAuthBootstrapping(false);
-        return;
-      }
-
-      if (resolvedPlatform === 'vk' && vkPayload) {
-        setIsAuthBootstrapping(true);
-        authAttemptedRef.current = true;
-        let displayName = `VK ${vkPayload.vk_user_id}`;
-        let avatarUrl: string | undefined;
-        try {
-          await vkBridge.send('VKWebAppInit');
-          const userInfo = (await vkBridge.send('VKWebAppGetUserInfo')) as {
-            first_name?: string;
-            last_name?: string;
-            screen_name?: string;
-            photo_200?: string;
-          };
-          avatarUrl = userInfo.photo_200;
-
-          displayName =
-            [userInfo.first_name, userInfo.last_name].filter(Boolean).join(' ').trim() ||
-            userInfo.screen_name ||
-            displayName;
-        } catch {
-          // fallback to id-based label
-        }
-        
-        await bootstrapAuth({
-          platform: 'vk',
-          vkPayload,
-          displayName,
-          avatarUrl,
-        });
-        return;
-      }
-
-      console.log('=== AUTH DEBUG ===');
-      console.log('resolvedPlatform:', resolvedPlatform);
-      console.log('window.Telegram?.WebApp?.initData:', !!window.Telegram?.WebApp?.initData);
-      console.log('authAttemptedRef.current:', authAttemptedRef.current);
-      console.log('token:', !!token);
-      console.log('isOnboarded:', isOnboarded);
-      console.log('=================');
-
-      if (resolvedPlatform === 'telegram' && window.Telegram?.WebApp?.initData) {
-          setIsAuthBootstrapping(true);
-          authAttemptedRef.current = true;
-          const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
-          const displayName =
-              [tgUser?.first_name, tgUser?.last_name].filter(Boolean).join(' ').trim() ||
-              tgUser?.username ||
-              'Telegram User';
-          await bootstrapAuth({
-              platform: 'telegram',
-              telegramInitData: window.Telegram.WebApp.initData,
-              displayName,
-              avatarUrl: tgUser?.photo_url,
-          });
-          return;
-      }
-
-      setIsAuthBootstrapping(false);
-    })().catch((err) => {
-      console.error('Platform bootstrap auth failed', err);
-      authAttemptedRef.current = false;
-    }).finally(() => {
-      setIsAuthBootstrapping(false);
-    });
-
-  }, [isOnboarded, token, user?.avatar, telegram.initData, telegram.isReady, telegram.user, bootstrapAuth, setPlatform]);
-
+    console.log('[platform]', resolvedPlatform);
+  }, [telegram.isTelegram, telegram.initData, setPlatform]);
 
   useEffect(() => {
     // Проверяем и обновляем streak
@@ -380,6 +408,81 @@ export const TrajectoryApp = () => {
       return () => clearTimeout(timer);
     }
   }, [platform, isTelegramReady, expand, canInstall]);
+
+  useEffect(() => {
+    if (platform !== 'vk') return;
+    if (authAttemptedRef.current) return;
+
+    console.log('[vk] bootstrap start');
+
+    void (async () => {
+      setIsAuthBootstrapping(true);
+      authAttemptedRef.current = true;
+
+      let vkPayload = await getVKLaunchPayload();
+
+      if (!vkPayload) {
+        console.warn('[vk] no launch payload');
+        setIsAuthBootstrapping(false);
+        return;
+      }
+
+      let displayName = `VK ${vkPayload.vk_user_id}`;
+      let avatarUrl: string | undefined;
+
+      try {
+        await vkBridge.send('VKWebAppInit');
+        const userInfo = await vkBridge.send('VKWebAppGetUserInfo');
+        avatarUrl = userInfo.photo_200;
+        displayName =
+          [userInfo.first_name, userInfo.last_name].filter(Boolean).join(' ')
+          || userInfo.screen_name
+          || displayName;
+      } catch (e) {
+        console.warn('[vk] user info failed', e);
+      }
+
+      await bootstrapAuth({
+        platform: 'vk',
+        vkPayload,
+        displayName,
+        avatarUrl,
+      });
+
+      setIsAuthBootstrapping(false);
+      console.log('[vk] bootstrap done');
+    })();
+  }, [platform, bootstrapAuth]);
+
+  useEffect(() => {
+    if (platform !== 'telegram') return;
+    if (!telegram.isReady) return;
+    if (authAttemptedRef.current) return;
+
+    console.log('[tg] bootstrap start');
+
+    void (async () => {
+      setIsAuthBootstrapping(true);
+      authAttemptedRef.current = true;
+
+      const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+
+      const displayName =
+        [tgUser?.first_name, tgUser?.last_name].filter(Boolean).join(' ')
+        || tgUser?.username
+        || 'Telegram User';
+
+      await bootstrapAuth({
+        platform: 'telegram',
+        telegramInitData: window.Telegram.WebApp.initData,
+        displayName,
+        avatarUrl: tgUser?.photo_url,
+      });
+
+      setIsAuthBootstrapping(false);
+      console.log('[tg] bootstrap done');
+    })();
+  }, [platform, telegram.isReady, bootstrapAuth]);
 
   useEffect(() => {
     if (platform !== 'vk' || !isOnboarded) {
