@@ -243,7 +243,7 @@ export const TicketSlider = ({
         className="flex items-center gap-2 text-white/60"
       >
         <Sparkles className="w-4 h-4 text-[#007AFF]" />
-        <span className="text-sm font-medium">БИЛЕТА МЕЧТЫ</span>
+        <span className="text-sm font-medium">БИЛЕТ МЕЧТЫ</span>
         <Sparkles className="w-4 h-4 text-[#007AFF]" />
       </motion.div>
 
