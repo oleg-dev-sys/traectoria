@@ -257,6 +257,8 @@ export const TrajectoryApp = () => {
       return;
     }
 
+    console.log("После if (telegram.isTelegram && !telegram.isReady)")
+
     void (async () => {
       let vkPayload = await getVKLaunchPayload();
       
@@ -283,14 +285,10 @@ export const TrajectoryApp = () => {
       const needsAvatarSync = isNativeMiniApp && !user?.avatar;
       console.log("token:", token);
       console.log("isOnboarded:", isOnboarded);
-      if (authAttemptedRef.current && resolvedPlatform !== 'telegram') {
+      if (authAttemptedRef.current || ((isOnboarded || token) && !needsAvatarSync)) {
         setIsAuthBootstrapping(false);
         return;
       }
-      // if (authAttemptedRef.current || ((isOnboarded || token) && !needsAvatarSync)) {
-      //   setIsAuthBootstrapping(false);
-      //   return;
-      // }
 
       if (resolvedPlatform === 'vk' && vkPayload) {
         setIsAuthBootstrapping(true);
