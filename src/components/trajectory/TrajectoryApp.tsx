@@ -255,7 +255,6 @@ export const TrajectoryApp = () => {
         isOnboarded,
         token,
         userAvatar: user?.avatar,
-        needsAvatarSync
     });
 
     console.log("TG HOOK STATE:", telegram.isTelegram, telegram.isReady);
