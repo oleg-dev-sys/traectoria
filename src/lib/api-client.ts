@@ -1,4 +1,5 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "/api";
+// const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "/api";
+const API_BASE_URL = "https://77-222-32-138.vps-ptr.clients.spaceweb.ru/traectoria";
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
 
