@@ -316,6 +316,14 @@ export const TrajectoryApp = () => {
         return;
       }
 
+      console.log('=== AUTH DEBUG ===');
+      console.log('resolvedPlatform:', resolvedPlatform);
+      console.log('window.Telegram?.WebApp?.initData:', !!window.Telegram?.WebApp?.initData);
+      console.log('authAttemptedRef.current:', authAttemptedRef.current);
+      console.log('token:', !!token);
+      console.log('isOnboarded:', isOnboarded);
+      console.log('=================');
+
       if (resolvedPlatform === 'telegram' && window.Telegram?.WebApp?.initData) {
           setIsAuthBootstrapping(true);
           authAttemptedRef.current = true;
