@@ -316,20 +316,21 @@ export const TrajectoryApp = () => {
         return;
       }
 
-      if (resolvedPlatform === 'telegram' && telegram.initData) {
-        setIsAuthBootstrapping(true);
-        authAttemptedRef.current = true;
-        const displayName =
-          [telegram.user?.first_name, telegram.user?.last_name].filter(Boolean).join(' ').trim() ||
-          telegram.user?.username ||
-          'Telegram User';
-        await bootstrapAuth({
-          platform: 'telegram',
-          telegramInitData: telegram.initData,
-          displayName,
-          avatarUrl: telegram.user?.photo_url,
-        });
-        return;
+      if (resolvedPlatform === 'telegram' && window.Telegram?.WebApp?.initData) {
+          setIsAuthBootstrapping(true);
+          authAttemptedRef.current = true;
+          const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
+          const displayName =
+              [tgUser?.first_name, tgUser?.last_name].filter(Boolean).join(' ').trim() ||
+              tgUser?.username ||
+              'Telegram User';
+          await bootstrapAuth({
+              platform: 'telegram',
+              telegramInitData: window.Telegram.WebApp.initData,
+              displayName,
+              avatarUrl: tgUser?.photo_url,
+          });
+          return;
       }
 
       setIsAuthBootstrapping(false);
