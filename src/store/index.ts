@@ -166,6 +166,13 @@ export const useAppStore = create<StoreState>()(
       },
 
       bootstrapAuth: async (opts) => {
+        const existingToken = get().token;
+
+        if (existingToken) {
+          console.log('[auth] token already exists — skip bootstrap');
+          return;
+        }
+        
         if (opts.platform === "web") {
           console.warn("[auth] bootstrapAuth called with web — skipped");
           return;

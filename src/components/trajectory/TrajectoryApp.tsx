@@ -457,6 +457,13 @@ export const TrajectoryApp = () => {
   useEffect(() => {
     if (platform !== 'telegram') return;
     if (!telegram.isReady) return;
+
+    const token = useAppStore.getState().token;
+    if (token) {
+      console.log('[tg] token exists — skip bootstrap');
+      return;
+    }
+
     if (authAttemptedRef.current) return;
 
     console.log('[tg] bootstrap start');
