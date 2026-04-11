@@ -361,7 +361,7 @@ export const useAppStore = create<StoreState>()(
       partialize: (state) => ({
         token: state.token,
         activeTab: state.activeTab,
-        platform: state.platform,  // ИСПРАВЛЕНИЕ: Сохраняем platform в localStorage
+        // platform: state.platform,  // Сохраняем platform в localStorage
       }),
     },
   ),
