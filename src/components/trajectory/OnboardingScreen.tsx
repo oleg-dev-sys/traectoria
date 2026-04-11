@@ -124,6 +124,8 @@ export const OnboardingScreen = () => {
   const telegramBotUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || '';
   const vkAppId = process.env.NEXT_PUBLIC_VK_APP_ID || '';
 
+  console.log(isWeb)
+
   useEffect(() => {
     if (isWeb && token && step === 0) {
       setStep(1);
