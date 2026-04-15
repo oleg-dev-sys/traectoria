@@ -110,7 +110,18 @@ export const OnboardingScreen = () => {
   const token = useAppStore((state) => state.token);
   const platform = usePlatform();
   const telegram = useTelegram();
-  const isWeb = platform === 'web' && !telegram.initData;
+  
+  const [isPlatformReady, setIsPlatformReady] = useState(false);
+
+  useEffect(() => {
+    // Даём один тик на определение платформы
+    const t = setTimeout(() => setIsPlatformReady(true), 50);
+    return () => clearTimeout(t);
+  }, []);
+
+  const isTelegramEnv = telegram.isTelegram || !!telegram.initData;
+  const isWeb = isPlatformReady && platform === 'web' && !isTelegramEnv;
+
   const steps = useMemo(() => (isWeb ? WEB_STEPS : MINI_APP_STEPS), [isWeb]);
   const telegramName =
     [telegram.user?.first_name, telegram.user?.last_name].filter(Boolean).join(' ').trim() ||
