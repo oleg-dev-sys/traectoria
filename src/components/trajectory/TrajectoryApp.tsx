@@ -459,28 +459,35 @@ export const TrajectoryApp = () => {
     if (!telegram.isReady) return;
 
     const token = useAppStore.getState().token;
-    if (token) {
-      console.log('[tg] token exists — skip bootstrap');
-      return;
-    }
-
-    const initData = window.Telegram?.WebApp?.initData;
-    if (!initData) {
-      console.log('[tg] no initData — skip bootstrap');
-      return;
-    }
-
-    if (authAttemptedRef.current) return;
-
-    console.log('[tg] bootstrap start');
 
     void (async () => {
+      // Если токен есть — проверяем его валидность
+      if (token) {
+        try {
+          await apiClient.me(token);
+          console.log('[tg] token valid — skip bootstrap');
+          return; // токен живой, всё хорошо
+        } catch (e) {
+          // Токен невалидный — чистим и идём авторизовываться заново
+          console.warn('[tg] token invalid, re-bootstrapping');
+          useAppStore.getState().clearSession(); // или как у тебя называется экшн очистки
+        }
+      }
+
+      const initData = window.Telegram?.WebApp?.initData;
+      if (!initData) {
+        console.log('[tg] no initData — skip bootstrap');
+        return;
+      }
+
+      if (authAttemptedRef.current) return;
+
+      console.log('[tg] bootstrap start');
       setIsAuthBootstrapping(true);
       authAttemptedRef.current = true;
 
       try {
         const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
-
         const displayName =
           [tgUser?.first_name, tgUser?.last_name].filter(Boolean).join(' ')
           || tgUser?.username
