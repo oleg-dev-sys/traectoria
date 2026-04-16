@@ -123,7 +123,7 @@ export const useTelegram = () => {
 
   return {
     isReady,
-    isTelegram: typeof window !== 'undefined' && !!window.Telegram?.WebApp,
+    isTelegram: typeof window !== 'undefined' && !!window.Telegram?.WebApp?.initData,
     theme,
     user,
     initData,
