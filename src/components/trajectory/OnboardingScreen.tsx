@@ -278,41 +278,33 @@ export const OnboardingScreen = () => {
         }
 
         setIsSubmitting(true);
-        void bootstrapAuth({
-          platform: 'vk',
-          vkPayload: {
-            code, 
-            device_id: deviceId,
-          },
-        })
-        // void VKID.Auth.exchangeCode(code, deviceId)
-        //   .then(async (tokenData) => {
-        //     const accessToken = String(tokenData.access_token ?? tokenData.accessToken ?? '');
-        //     if (!accessToken) {
-        //       throw new Error('vk_access_token_missing');
-        //     }
+        void VKID.Auth.exchangeCode(code, deviceId)
+          .then(async (tokenData) => {
+            const accessToken = String(tokenData.access_token ?? tokenData.accessToken ?? '');
+            if (!accessToken) {
+              throw new Error('vk_access_token_missing');
+            }
 
-        //     let userId = extractUserId(tokenData);
-        //     let displayName = extractDisplayName(tokenData);
-        //     if (!userId || !displayName) {
-        //       const userInfo = await VKID.Auth.userInfo(accessToken);
-        //       if (!userId) userId = extractUserId(userInfo);
-        //       if (!displayName) displayName = extractDisplayName(userInfo);
-        //     }
+            let userId = extractUserId(tokenData);
+            let displayName = extractDisplayName(tokenData);
+            if (!userId || !displayName) {
+              const userInfo = await VKID.Auth.userInfo(accessToken);
+              if (!userId) userId = extractUserId(userInfo);
+              if (!displayName) displayName = extractDisplayName(userInfo);
+            }
 
-        //     if (!userId) {
-        //       throw new Error('vk_user_id_missing');
-        //     }
+            if (!userId) {
+              throw new Error('vk_user_id_missing');
+            }
 
-        //     await bootstrapAuth({
-        //       platform: 'vk',
-        //       vkPayload: {
-        //         access_token: accessToken,
-        //         user_id: userId,
-        //       },
-        //       displayName: displayName || `VK ${userId}`,
-        //     });
-        //   })
+            await bootstrapAuth({
+              platform: 'vk',
+              vkPayload: {
+                code,
+                device_id: deviceId,
+              },
+            });
+          })
           .catch(() => {
             setErrors({ name: 'Не удалось завершить вход через VK' });
           })
