@@ -441,7 +441,7 @@ export const TrajectoryApp = () => {
       } catch (e) {
         console.warn('[vk] user info failed', e);
       }
-
+      console.log(vkPayload)
       await bootstrapAuth({
         platform: 'vk',
         vkPayload,
