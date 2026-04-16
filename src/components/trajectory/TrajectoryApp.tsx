@@ -41,7 +41,7 @@ const getVKLaunchPayload = async (): Promise<Record<string, string> | null> => {
 
     for (const [key, value] of Object.entries(raw)) {
       const normalizedValue = toStringValue(value);
-      if (!normalizedValue) continue;
+      // if (!normalizedValue) continue;
 
       if (key === 'sign') {
         payload.sign = normalizedValue;
@@ -53,7 +53,11 @@ const getVKLaunchPayload = async (): Promise<Record<string, string> | null> => {
         continue;
       }
 
-      payload[`vk_${key}`] = normalizedValue;
+      else {
+        payload[`vk_${key}`] = normalizedValue;
+      }
+
+      // payload[`vk_${key}`] = normalizedValue;
     }
 
     return Object.keys(payload).length > 0 ? payload : null;
